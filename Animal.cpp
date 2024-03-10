@@ -1,7 +1,7 @@
+// Copyright 2024 Parfenov Daniil
 #include "Animal.h"
 #include <utility>
 #include <iostream>
-#define _CRT_SECURE_NO_WARNINGS
 
 
 Animal::Animal() {
@@ -31,7 +31,6 @@ Animal::Animal(const Animal& ref) {
     this->sex = new char[sexLength];
     snprintf(this->color, colorLength, ref.color);
     snprintf(this->sex, sexLength, ref.sex);
-    
 }
 
 Animal::Animal(Animal&& ref): age(ref.age), mass(ref.mass) {
@@ -85,8 +84,7 @@ void Animal::SetColor(const char* newColor) {
 }
 
 Animal& Animal::operator=(const Animal& ref) {
-    if (this != &ref)
-    {
+    if (this != &ref) {
         this->mass = ref.mass;
         this->age = ref.age;
         this->SetSex(ref.sex);
@@ -96,8 +94,7 @@ Animal& Animal::operator=(const Animal& ref) {
 }
 
 Animal& Animal::operator=(Animal&& ref) {
-    if (this != &ref)
-    {
+    if (this != &ref) {
         this->mass = ref.mass;
         ref.mass = 0;
         this->age = ref.age;
@@ -126,7 +123,8 @@ Dog::Dog(): Animal() {
     race = Breed::bulldog;
 }
 
-Dog::Dog(const char* name, Breed race, float mass, const char* sex, const char* color, int age):Animal(mass, sex, color, age) {
+Dog::Dog(const char* name, Breed race, float mass, const char* sex,
+         const char* color, int age): Animal(mass, sex, color, age) {
     int nameLength = strlen(name) + 1;
     this->name = new char[nameLength];
     snprintf(this->name, nameLength, name);
@@ -140,8 +138,10 @@ Dog::Dog(const Dog& ref):Animal(ref) {
     this->race = ref.race;
 }
 
-Dog::Dog(Dog&& ref) : Animal(std::move(ref)), name(std::move(ref.name)), race(ref.race) {
+Dog::Dog(Dog&& ref) : Animal(std::move(ref)) {
+    this->name = std::move(ref.name);
     ref.name = nullptr;
+    this->race = ref.race;
 }
 
 Dog::~Dog() {
@@ -150,8 +150,7 @@ Dog::~Dog() {
 
 Dog& Dog::operator=(const Dog& ref) {
     if (this != &ref) {
-        Animal::operator=(ref);
-        //this->Animal::operator=(ref);
+        this->Animal::operator=(ref);
         this->SetName(ref.name);
         this->race = ref.race;
     }
@@ -160,7 +159,7 @@ Dog& Dog::operator=(const Dog& ref) {
 
 Dog& Dog::operator=(Dog&& ref) {
     if (this != &ref) {
-        Animal::operator=(std::move(ref));
+        this->Animal::operator=(std::move(ref));
         delete[] this->name;
         this->name = std::move(ref.name);
         ref.name = nullptr;
@@ -175,37 +174,38 @@ char* Dog::GetName() const {
 
 char* Dog::GetRace() const {
     char* dogRace = nullptr;
-    dogRace = new char[20];
+    int maxDogRaceLength = 20;
+    dogRace = new char[maxDogRaceLength];
     switch (this->race) {
     case Breed::bulldog:
-        snprintf(dogRace, 8, "Bulldog");
+        snprintf(dogRace, maxDogRaceLength, "Bulldog");
         break;
     case Breed::labrador:
-        snprintf(dogRace, 9, "Labrador");
+        snprintf(dogRace, maxDogRaceLength, "Labrador");
         break;
     case Breed::poodle:
-        snprintf(dogRace, 7, "Poodle");
+        snprintf(dogRace, maxDogRaceLength, "Poodle");
         break;
     case Breed::rottweiler:
-        snprintf(dogRace, 11, "Rottweiler");
+        snprintf(dogRace, maxDogRaceLength, "Rottweiler");
         break;
     case Breed::corgi:
-        snprintf(dogRace, 6, "Corgi");
+        snprintf(dogRace, maxDogRaceLength, "Corgi");
         break;
     case Breed::dashund:
-        snprintf(dogRace, 8, "Dashhund");
+        snprintf(dogRace, maxDogRaceLength, "Dashhund");
         break;
     case Breed::doberman:
-        snprintf(dogRace, 9, "Doberman");
+        snprintf(dogRace, maxDogRaceLength, "Doberman");
         break;
     case Breed::germanShepherd:
-        snprintf(dogRace, 15, "German Shephed");
+        snprintf(dogRace, maxDogRaceLength, "German Shephed");
         break;
     case Breed::beagle:
-        snprintf(dogRace, 7, "Beagle");
+        snprintf(dogRace, maxDogRaceLength, "Beagle");
         break;
     case Breed::yorkshireTerrier:
-        snprintf(dogRace, 18, "Yorkshire Terrier");
+        snprintf(dogRace, maxDogRaceLength, "Yorkshire Terrier");
         break;
     default:
         std::cout << "ERROR" << std::endl;
@@ -229,9 +229,13 @@ void Dog::WhatDoesSay() {
 }
 
 void Dog::print() {
-    std::cout << "Name: " << this->name << std::endl;
-    std::cout << "Breed: " << this->GetRace() << std::endl;
-    this->Animal::print(); 
+    if (this->name != nullptr) {
+        std::cout << "Name: " << this->name << std::endl;
+        std::cout << "Breed: " << this->GetRace() << std::endl;
+        this->Animal::print();
+    } else {
+        std::cout << "This Dog is undefined. Cannot to print" << std::endl;
+    }
 }
 
 Fox::Fox():Animal() {
@@ -240,8 +244,9 @@ Fox::Fox():Animal() {
     this->numberRabbitsEaten = 0;
 }
 
-Fox::Fox(const char* name, TypeFox type, float mass, 
-         const char* sex, const char* color, int age): Animal(mass, sex, color, age) {
+Fox::Fox(const char* name, TypeFox type, float mass,
+         const char* sex, const char* color,
+         int age): Animal(mass, sex, color, age) {
     int nameLength = strlen(name) + 1;
     this->name = new char[nameLength];
     snprintf(this->name, nameLength, name);
@@ -267,8 +272,7 @@ Fox::~Fox() {
 }
 
 Fox& Fox::operator=(const Fox& ref) {
-    if (this != &ref)
-    {
+    if (this != &ref) {
         this->Animal::operator=(ref);
         this->SetName(ref.name);
         this->type = ref.type;
@@ -278,8 +282,7 @@ Fox& Fox::operator=(const Fox& ref) {
 }
 
 Fox& Fox::operator=(Fox&& ref) {
-    if (this != &ref)
-    {
+    if (this != &ref) {
         this->Animal::operator=(std::move(ref));
         delete[] this->name;
         this->name = std::move(ref.name);
@@ -300,27 +303,26 @@ char* Fox::GetName() const {
 }
 
 char* Fox::GetType() const {
-    char* type = new char[15];
-
-    switch (this->type)
-    {
+    int maxFoxTypeLength = 15;
+    char* type = new char[maxFoxTypeLength];
+    switch (this->type) {
     case TypeFox::redFox:
-        snprintf(type, 8, "Red Fox");
+        snprintf(type, maxFoxTypeLength, "Red Fox");
         break;
     case TypeFox::capeFox:
-        snprintf(type, 9, "Cape Fox");
+        snprintf(type, maxFoxTypeLength, "Cape Fox");
         break;
     case TypeFox::kitFox:
-        snprintf(type, 8, "Kit Fox");
+        snprintf(type, maxFoxTypeLength, "Kit Fox");
         break;
     case TypeFox::swiftFox:
-        snprintf(type, 10, "Swift Fox");
+        snprintf(type, maxFoxTypeLength, "Swift Fox");
         break;
     case TypeFox::islandFox:
-        snprintf(type, 11, "Island Fox");
+        snprintf(type, maxFoxTypeLength, "Island Fox");
         break;
     case TypeFox::grayFox:
-        snprintf(type, 9, "Gray Fox");
+        snprintf(type, maxFoxTypeLength, "Gray Fox");
         break;
     default:
         delete[] type;
@@ -349,8 +351,7 @@ void Fox::Eat() {
 }
 
 void Fox::WhatDoesSay() {
-    switch (this->type)
-    {
+    switch (this->type) {
     case TypeFox::redFox:
         std::cout << "Ring-ding-ding-ding-dingeringeding!";
         break;
@@ -376,8 +377,13 @@ void Fox::WhatDoesSay() {
 }
 
 void Fox::print() {
-    std::cout << "Name: " << this->name << '\n';
-    std::cout << "Type: " << this->GetType() << '\n';
-    std::cout << "Number of eaten rabbits: " << this->numberRabbitsEaten << '\n';
-    this->Animal::print();
+    if (this->name != nullptr) {
+        std::cout << "Name: " << this->name << '\n';
+        std::cout << "Type: " << this->GetType() << '\n';
+        std::cout << "Number of eaten rabbits: "
+            << this->numberRabbitsEaten << '\n';
+        this->Animal::print();
+    } else {
+        std::cout << "This Fox is undefined. Cannot to print" << std::endl;
+    }
 }

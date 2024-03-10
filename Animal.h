@@ -1,14 +1,17 @@
-//#pragma once
-#include <string.h>
-#define _CRT_SECURE_NO_WARNINGS
+// Copyright 2024 Parfenov Daniil
+#ifndef ANIMAL_H_
+#define ANIMAL_H_
+
+#include <cstring>
 
 class Animal {
-private:
+ private:
     float mass;
     char* sex;
     char* color;
     int age;
-public:
+
+ public:
     Animal();
     Animal(float mass, const char* sex, const char* color, int age);
     Animal(const Animal& ref);
@@ -41,16 +44,20 @@ enum class Breed {
 };
 
 class Dog : public Animal {
-private:
+ private:
     char* name;
     Breed race;
-public:
+
+ public:
     Dog();
-    Dog(const char* name, Breed race, float mass, const char* sex, const char* color, int age);
+    Dog(const char* name, Breed race,
+        float mass, const char* sex,
+        const char* color, int age);
+
     Dog(const Dog& ref);
     Dog(Dog&& ref);
     ~Dog();
-    
+
     Dog& operator=(const Dog& ref);
     Dog& operator=(Dog&& ref);
 
@@ -71,13 +78,16 @@ enum class TypeFox {
 };
 
 class Fox: public Animal {
-private:
+ private:
     char* name;
     TypeFox type;
     int numberRabbitsEaten;
-public:
+
+ public:
     Fox();
-    Fox(const char* name, TypeFox type, float mass, const char* sex, const char* color, int age);
+    Fox(const char* name, TypeFox type,
+        float mass, const char* sex,
+        const char* color, int age);
     Fox(const Fox& ref);
     Fox(Fox&& ref);
     ~Fox();
@@ -97,3 +107,4 @@ public:
     void WhatDoesSay() override;
     void print() override;
 };
+#endif  // ANIMAL_H_
